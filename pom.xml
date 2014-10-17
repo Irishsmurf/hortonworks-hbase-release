@@ -63,9 +63,8 @@
     <module>hbase-testing-util</module>
   </modules>
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/hbase/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/hbase/trunk</developerConnection>
-    <url>http://svn.apache.org/viewvc/hbase/trunk</url>
+    <connection>scm:git:git@github.com:splicemachine/spliceengine.git</connection>
+    <developerConnection>scm:git:git@github.com:splicemachine/spliceengine.git</developerConnection>
   </scm>
   <issueManagement>
     <system>JIRA</system>
