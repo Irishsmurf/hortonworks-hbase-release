@@ -3450,7 +3450,7 @@ public class HRegion implements HeapSize { // , Writable{
    */
   public RowLock getRowLock(byte[] row, boolean waitForLock) throws IOException {
     checkRow(row, "row lock");
-//    startRegionOperation();
+    startRegionOperation();
     try {
       HashedBytes rowKey = new HashedBytes(row);
       RowLockContext rowLockContext = new RowLockContext(rowKey);
@@ -3486,7 +3486,7 @@ public class HRegion implements HeapSize { // , Writable{
       // allocate new lock for this thread
       return rowLockContext.newLock();
     } finally {
-      //closeRegionOperation();
+      closeRegionOperation();
     }
   }
 
