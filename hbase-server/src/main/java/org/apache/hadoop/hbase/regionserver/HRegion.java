@@ -6154,8 +6154,4 @@ public class HRegion implements HeapSize { // , Writable{
   public void updatesUnlock() throws InterruptedIOException {
     updatesLock.readLock().unlock();
   }
-
-  public Configuration getConf() {
-    return conf;
-  }
 }
