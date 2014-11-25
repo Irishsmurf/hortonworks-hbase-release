@@ -5455,11 +5455,6 @@ public class HRegion implements HeapSize { // , Writable{
     return heapSize;
   }
 
-  public RegionSplitPolicy getRegionSplitPolicy()
-  {
-    return splitPolicy;
-  }
-  
   /*
    * This method calls System.exit.
    * @param message Message to print out.  May be null.
@@ -6163,6 +6158,4 @@ public class HRegion implements HeapSize { // , Writable{
   public Configuration getConf() {
     return conf;
   }
-  
-
 }
