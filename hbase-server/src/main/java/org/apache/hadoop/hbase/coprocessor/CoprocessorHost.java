@@ -80,6 +80,7 @@ public abstract class CoprocessorHost<E extends CoprocessorEnvironment> {
   /** Ordered set of loaded coprocessors with lock */
   protected SortedSet<E> coprocessors =
       new SortedCopyOnWriteSet<E>(new EnvironmentPriorityComparator());
+  protected List<E> coprocessorList = new ArrayList<E>();
   protected Configuration conf;
   // unique file prefix to use for local copies of jars when classloading
   protected String pathPrefix;
@@ -90,6 +91,15 @@ public abstract class CoprocessorHost<E extends CoprocessorEnvironment> {
     this.pathPrefix = UUID.randomUUID().toString();
   }
 
+  protected void updateCoprocessorList()
+  {
+	  coprocessorList.clear();
+	  for( E env: coprocessors)
+	  {
+		  coprocessorList.add(env);
+	  }
+  }
+  
   /**
    * Not to be confused with the per-object _coprocessors_ (above),
    * coprocessorNames is static and stores the set of all coprocessors ever
@@ -210,6 +220,7 @@ public abstract class CoprocessorHost<E extends CoprocessorEnvironment> {
       throws IOException {
     E env = loadInstance(implClass, priority, conf);
     coprocessors.add(env);
+    updateCoprocessorList();
   }
 
   /**
@@ -523,6 +534,7 @@ public abstract class CoprocessorHost<E extends CoprocessorEnvironment> {
       LOG.error("Removing coprocessor '" + env.toString() + "' from " +
           "environment because it threw:  " + e,e);
       coprocessors.remove(env);
+      updateCoprocessorList();
       try {
         shutdown(env);
       } catch (Exception x) {
