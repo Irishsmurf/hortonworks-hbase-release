@@ -95,6 +95,8 @@ public abstract class CoprocessorHost<E extends CoprocessorEnvironment> {
   /** Ordered set of loaded coprocessors with lock */
   protected SortedSet<E> coprocessors =
       new SortedCopyOnWriteSet<E>(new EnvironmentPriorityComparator());
+  protected List<E> coprocessorList = new ArrayList<E>();
+  
   protected Configuration conf;
   // unique file prefix to use for local copies of jars when classloading
   protected String pathPrefix;
@@ -170,6 +172,13 @@ public abstract class CoprocessorHost<E extends CoprocessorEnvironment> {
     coprocessors.addAll(configured);
   }
 
+  protected void updateCoprocessorList()
+  {
+	  coprocessorList.clear();
+	  for( E e: coprocessors){
+		  coprocessorList.add(e);
+	  }
+  }
   /**
    * Load a coprocessor implementation into the host
    * @param path path to implementation jar
@@ -225,6 +234,7 @@ public abstract class CoprocessorHost<E extends CoprocessorEnvironment> {
       throws IOException {
     E env = loadInstance(implClass, priority, conf);
     coprocessors.add(env);
+    updateCoprocessorList();
   }
 
   /**
@@ -561,6 +571,7 @@ public abstract class CoprocessorHost<E extends CoprocessorEnvironment> {
       LOG.error("Removing coprocessor '" + env.toString() + "' from " +
           "environment because it threw:  " + e,e);
       coprocessors.remove(env);
+      updateCoprocessorList();
       try {
         shutdown(env);
       } catch (Exception x) {
