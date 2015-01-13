@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
+import java.util.RandomAccess;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -2387,9 +2388,12 @@ public class HRegion implements HeapSize { // , Writable{
 
       byte[] family = e.getKey();
       List<Cell> cells = e.getValue();
+      assert cells instanceof RandomAccess;
+      int listSize = cells.size();
       Map<byte[], Integer> kvCount = new TreeMap<byte[], Integer>(Bytes.BYTES_COMPARATOR);
 
-      for (Cell cell: cells) {
+      for (int i =0; i < listSize; i++) {
+        Cell cell = cells.get(i);
         KeyValue kv = KeyValueUtil.ensureKeyValue(cell);
         //  Check if time is LATEST, change to time of most recent addition if so
         //  This is expensive.
@@ -3275,7 +3279,10 @@ public class HRegion implements HeapSize { // , Writable{
   void updateKVTimestamps(final Iterable<List<Cell>> keyLists, final byte[] now) {
     for (List<Cell> cells: keyLists) {
       if (cells == null) continue;
-      for (Cell cell : cells) {
+      assert cells instanceof RandomAccess;
+      int listSize = cells.size();
+      for (int i = 0; i < listSize; i++) {
+        Cell cell = cells.get(i);
         KeyValue kv = KeyValueUtil.ensureKeyValue(cell);
         kv.updateLatestStamp(now);
       }
@@ -3373,9 +3380,11 @@ public class HRegion implements HeapSize { // , Writable{
       for (Map.Entry<byte[], List<Cell>> e : familyMap.entrySet()) {
         byte[] family = e.getKey();
         List<Cell> cells = e.getValue();
-
+        assert cells instanceof RandomAccess;
         Store store = getStore(family);
-        for (Cell cell: cells) {
+        int listSize = cells.size();
+        for (int i=0; i < listSize; i++) {
+          Cell cell = cells.get(i);
           KeyValue kv = KeyValueUtil.ensureKeyValue(cell);
           kv.setMvccVersion(localizedWriteEntry.getWriteNumber());
           size += store.add(kv);
@@ -3468,7 +3477,10 @@ public class HRegion implements HeapSize { // , Writable{
     }
     long maxTs = now + timestampSlop;
     for (List<Cell> kvs : familyMap.values()) {
-      for (Cell cell : kvs) {
+      assert kvs instanceof RandomAccess;
+      int listSize = kvs.size();
+      for (int i = 0; i < listSize; i++) {
+        Cell cell = kvs.get(i);
         // see if the user-side TS is out of range. latest = server-side
         KeyValue kv = KeyValueUtil.ensureKeyValue(cell);
         if (!kv.isLatestTimestamp() && kv.getTimestamp() > maxTs) {
@@ -3488,7 +3500,10 @@ public class HRegion implements HeapSize { // , Writable{
   private void addFamilyMapToWALEdit(Map<byte[], List<Cell>> familyMap,
       WALEdit walEdit) {
     for (List<Cell> edits : familyMap.values()) {
-      for (Cell cell : edits) {
+      assert edits instanceof RandomAccess;
+      int listSize = edits.size();
+      for (int i=0; i < listSize; i++) {
+        Cell cell = edits.get(i);
         walEdit.add(KeyValueUtil.ensureKeyValue(cell));
       }
     }
@@ -7155,7 +7170,10 @@ public class HRegion implements HeapSize { // , Writable{
 
     long mutationSize = 0;
     for (List<Cell> cells: familyMap.values()) {
-      for (Cell cell : cells) {
+      assert cells instanceof RandomAccess;
+      int listSize = cells.size();
+      for (int i =0; i < listSize; i++) {
+        Cell cell = cells.get(i);
         KeyValue kv = KeyValueUtil.ensureKeyValue(cell);
         mutationSize += kv.getKeyLength() + kv.getValueLength();
       }
