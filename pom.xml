@@ -451,7 +451,7 @@
     <repository>
       <id>public</id>
       <name>hwx</name>
-      <url>http://54.235.92.15/nexus/content/groups/public/</url>
+      <url>http://repo.hortonworks.com/content/repositories/jetty-hadoop/</url>
     </repository>
   </repositories>
   <pluginRepositories>
