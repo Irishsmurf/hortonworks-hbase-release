@@ -17,7 +17,8 @@
  * limitations under the License.
  */
 package org.apache.hadoop.hbase.regionserver;
-
+import java.io.IOException;
+import org.apache.hadoop.hbase.HBaseInterfaceAudience;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Scan;
@@ -33,8 +34,8 @@ import org.apache.hadoop.hbase.client.Scan;
  * {@link #checkOnlyMemStore()} or to only read from StoreFiles with
  * {@link #checkOnlyStoreFiles()}.
  */
-@InterfaceAudience.Private
-class InternalScan extends Scan {
+@InterfaceAudience.LimitedPrivate(HBaseInterfaceAudience.COPROC)
+public class InternalScan extends Scan {
   private boolean memOnly = false;
   private boolean filesOnly = false;
 
@@ -45,6 +46,16 @@ class InternalScan extends Scan {
     super(get);
   }
 
+  /**
+   * @param scan - original scan object
+   * @throws IOException 
+   */
+  public InternalScan(Scan scan) 
+      throws IOException 
+  {
+    super(scan);
+  }
+  
   /**
    * StoreFiles will not be scanned. Only MemStore will be scanned.
    */
